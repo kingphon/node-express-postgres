@@ -1,0 +1,7 @@
+export const TYPE_NOT_EXIST = 'type_not_exist'
+export const WRONG_NAME_TYPE = 'wrong_name_type'
+export const NAME_IS_EMPTY = 'name_is_empty'
+export const WRONG_COMPANY_TYPE_TYPE = 'wrong_company_type_type'
+export const TYPE_IS_EMPTY = 'type_is_empty'
+export const COMMON_ERROR = 'common_error'
+export const COMPANY_NOT_EXIST = 'company_not_exist'
