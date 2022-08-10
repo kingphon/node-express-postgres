@@ -1,4 +1,4 @@
-import { COMMON_ERROR, COMPANY_NOT_EXIST, NAME_IS_EMPTY, TYPE_IS_EMPTY, TYPE_NOT_EXIST, WRONG_COMPANY_TYPE_TYPE, WRONG_NAME_TYPE } from "../const/error";
+import { COMMON_ERROR, COMPANY_IS_EMPTY, COMPANY_NOT_EXIST, DEPARTMENT_IS_EMPTY, DEPARTMENT_NOT_EXIST, NAME_IS_EMPTY, PASSWORD_IS_EMPTY, STAFF_NOT_EXIST, STORAGE_IS_MAX_LIMIT, TYPE_IS_EMPTY, TYPE_NOT_EXIST, WRONG_COMPANY_TYPE, WRONG_COMPANY_TYPE_TYPE, WRONG_DEPARTMENT_TYPE, WRONG_NAME_TYPE } from "../const/error";
 
 export const errorList = [
     {
@@ -28,5 +28,41 @@ export const errorList = [
     {
         type: COMPANY_NOT_EXIST,
         message: 'không tìm thấy công ty'
+    },
+    {
+        type: STORAGE_IS_MAX_LIMIT,
+        message: 'số lượng cơ quan lưu trữ đạt giới hạn'
+    },
+    {
+        type: DEPARTMENT_NOT_EXIST,
+        message: 'không tìm thấy phòng ban'
+    },
+    {
+        type: COMPANY_IS_EMPTY,
+        message: 'công ty không được trống'
+    },
+    {
+        type: WRONG_COMPANY_TYPE,
+        message: 'id công ty không đúng định dạng'
+    },
+    {
+        type: WRONG_COMPANY_TYPE,
+        message: 'số điện thoại không đúng định dạng'
+    },
+    {
+        type: DEPARTMENT_IS_EMPTY,
+        message: 'id phòng ban không được trống'
+    },
+    {
+        type: WRONG_DEPARTMENT_TYPE,
+        message: 'id phòng ban không đúng định dạng'
+    },
+    {
+        type: PASSWORD_IS_EMPTY,
+        message: 'mật khẩu không được trống'
+    },
+    {
+        type: STAFF_NOT_EXIST,
+        message: 'nhân viên không tồn tại'
     },
 ]

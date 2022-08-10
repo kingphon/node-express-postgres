@@ -1,5 +1,5 @@
-import CompanyType from "../models/company_type"
-import DocumentStatus from "../models/document_status"
+import CompanyType from "../models/CompanyType"
+import DocumentStatus from "../models/DocumentStatus"
 import { AppDataSource } from "./db"
 
 export const COMPANY_TYPE = ['normal', 'storage']

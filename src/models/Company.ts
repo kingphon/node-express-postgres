@@ -1,8 +1,9 @@
-import { IsBoolean, IsNotEmpty, IsString, IsUUID, UUIDVersion, ValidateIf } from "class-validator";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { IsNotEmpty, IsString } from "class-validator";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PrimaryGeneratedColumnUUIDOptions } from "typeorm/decorator/options/PrimaryGeneratedColumnUUIDOptions";
-import { NAME_IS_EMPTY, TYPE_NOT_EXIST, WRONG_NAME_TYPE } from "../../const/error";
-import CompanyType from "../company_type";
+import { NAME_IS_EMPTY, WRONG_NAME_TYPE } from "../const/error";
+import CompanyType from "./CompanyType";
+import Department from "./Department";
 
 @Entity()
 export default class Company {
@@ -10,20 +11,18 @@ export default class Company {
   id: PrimaryGeneratedColumnUUIDOptions;
 
   @Column()
-  @IsString({message: WRONG_NAME_TYPE})
-  @IsNotEmpty({message: NAME_IS_EMPTY})
+  @IsString({ message: WRONG_NAME_TYPE })
+  @IsNotEmpty({ message: NAME_IS_EMPTY })
   name: string;
 
   // @Column()
   // pic: UUIDVersion;
 
   @Column()
-  @IsBoolean()
-  @IsNotEmpty()
   active?: boolean;
 
   @Column()
-  typeId: string;
+  typeId?: string;
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: string;
@@ -33,4 +32,7 @@ export default class Company {
 
   @ManyToOne(() => CompanyType, (companyType) => companyType.companies)
   type: string
+
+  @OneToMany(() => Department, (department) => department.company)
+  departments: Department[]
 }

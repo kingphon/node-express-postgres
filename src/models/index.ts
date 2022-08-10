@@ -1,1 +1,5 @@
-export { default as Company } from './company'
+export { default as Company } from './Company'
+export { default as Department } from './Department'
+export { default as Staff } from './Staff'
+export { default as DocumentStatus } from './DocumentStatus'
+export { default as CompanyType } from './CompanyType'

@@ -1,5 +1,5 @@
 import { Entity, OneToMany, PrimaryColumn } from "typeorm";
-import Company from "../company";
+import Company from "./Company";
 
 @Entity()
 export default class CompanyType {
