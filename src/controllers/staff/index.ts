@@ -1,121 +1,101 @@
-// import { validate } from "class-validator";
-// import { Request, Response } from "express";
-// import { AppDataSource } from "../../configs/db";
-// import { DEPARTMENT_NOT_EXIST, STAFF_NOT_EXIST } from "../../const/error";
-// import { Staff } from "../../entities";
-// import StaffService from "../../DAO/staff";
-// import { checkActive } from "../../utils/helper";
-// import { r200, r400, r404 } from "../../utils/response";
+import { validate } from "class-validator";
+import { Request, Response } from "express";
+import { DEPARTMENT_NOT_EXIST, PHONE_IS_EXIST, STAFF_NOT_EXIST } from "../../const/error";
+import { Staff } from "../../entities";
+import { checkActive } from "../../utils/helper";
+import { r200, r400, r404 } from "../../utils/response";
+import { RequestStaffAll } from "../../models/request/staff";
+import StaffService from "../../services/staff";
+import DepartmentService from "../../services/department";
 
-// class StaffController {
+class StaffController {
 
-//   static listAll = async (req: Request, res: Response) => {
-//     const { active, limit, page } = req.query
-//     const tempLimit = limit || 20
-//     const tempPage = page || 0
+  static listAll = async (req: Request, res: Response) => {
+    const filter: RequestStaffAll = res.locals.staffAll
 
-//     const [staffs, total] = await StaffService.listAll({ active, limit: tempLimit, page: tempPage });
+    const result = await StaffService.listAll(filter)
 
-//     r200(res, { data: staffs, total, limit: tempLimit, page: tempPage })
-//   };
+    r200(res, { ...result, ...filter })
+  };
 
-//   static newStaff = async (req: Request, res: Response) => {
-//     const { name, phone, password, departmentId } = req.body;
-//     const staff = new Staff();
+  static newStaff = async (req: Request, res: Response) => {
+    const staff: Staff = res.locals.staffCreate
 
-//     staff.name = name;
-//     staff.phone = phone;
-//     staff.password = password;
-//     staff.departmentId = departmentId;
-//     staff.department = departmentId;
-//     staff.active = false;
-//     staff.isRoot = false;
+    const [_, errFindOne] = await DepartmentService.findOneWithId(staff.departmentId)
 
-//     const errors = await validate(staff);
-//     if (errors.length > 0) {
-//       const error = (errors[0].constraints[Object.keys(errors[0].constraints)[0]])
-//       r400(res, error)
-//       return;
-//     }
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
+    }
 
-//     staff.hashPassword();
+    const [staffFindOne, errStaffFindOne] = await StaffService.findOneWithPhone(staff.phone)
 
-//     const err = StaffService.newStaff(staff)
+    if (staffFindOne) {
+      r404(res, PHONE_IS_EXIST)
+      return
+    }
 
-//     if (err) {
-//       r400(res, err)
-//     }
+    const err = StaffService.newStaff(staff)
 
-//     r200(res, {})
-//   };
+    if (err) {
+      r400(res, err)
+    }
 
-//   static editStaff = async (req: Request, res: Response) => {
-//     const id: any = req.params.staffId;
-//     const { name, phone, password, departmentId } = req.body;
+    r200(res, {})
+  };
 
-//     const staffRepository = AppDataSource.getRepository(Staff)
-//     try {
-//       const staff = await staffRepository.findOneOrFail({
-//         where: {
-//           id: id
-//         }
-//       });
+  static editStaff = async (req: Request, res: Response) => {
+    const staff: Staff = res.locals.staffUpdate
 
-//       staff.name = name;
-//       staff.phone = phone;
-//       staff.password = password;
-//       staff.departmentId = departmentId;
-//       staff.department = departmentId;
-//       staff.updatedAt = new Date().toISOString()
+    const [_, errFindOneDepartment] = await DepartmentService.findOneWithId(staff.departmentId)
 
-//       const errors = await validate(staff);
-//       if (errors.length > 0) {
-//         const error = (errors[0].constraints[Object.keys(errors[0].constraints)[0]])
-//         r400(res, error)
-//         return;
-//       }
+    if (errFindOneDepartment) {
+      r404(res, errFindOneDepartment)
+      return
+    }
 
-//       staff.hashPassword();
+    const [staffFindOne, errFindOne] = await StaffService.findOneWithId(staff.id)
 
-//       const err = StaffService.editStaff(staff)
-  
-//       if (err) {
-//         r400(res, err)
-//       }
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
+    }
 
-//       r200(res, {})
-//     } catch (error) {
-//       r404(res, STAFF_NOT_EXIST)
-//       return;
-//     }
-//   };
+    const [staffFindOneByPhone, errStaffFindOneByPhone] = await StaffService.findOneWithPhone(staff.phone)
 
-//   static changeStatusStaff = async (req: Request, res: Response) => {
-//     const id: any = req.params.staffId;
+    if (staffFindOneByPhone) {
+      r404(res, PHONE_IS_EXIST)
+      return
+    }
 
-//     const staffRepository = AppDataSource.getRepository(Staff)
-//     try {
-//       const staff = await staffRepository.findOneOrFail({
-//         where: {
-//           id: id
-//         }
-//       });
+    const err = StaffService.editStaff(staffFindOne, staff)
 
-//       staff.active = !staff.active;
-//       staff.updatedAt = new Date().toISOString()
+    if (err) {
+      r400(res, err)
+    }
 
-//       const err = StaffService.changeStatusStaff(staff)
-  
-//       if (err) {
-//         r400(res, err)
-//       }
+    r200(res, {})
+  };
 
-//       r200(res, {})
-//     } catch (error) {
-//       r404(res, STAFF_NOT_EXIST)
-//       return;
-//     }
-//   };
-// };
+  static changeStatusStaff = async (req: Request, res: Response) => {
+    const staff: Staff = res.locals.staffUpdate
 
-// export default StaffController;
+    const [staffFindOne, errFindOne] = await StaffService.findOneWithId(staff.id)
+
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
+    }
+
+    const errUpdate = StaffService.changStatusStaff(staffFindOne)
+
+    if (errUpdate) {
+      r404(res, errUpdate)
+      return
+    }
+
+    r200(res, {})
+  };
+};
+
+export default StaffController;

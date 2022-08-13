@@ -1,11 +1,6 @@
 import { Company } from "../../entities";
 
-interface IResponseCompanyAll {
-    data: Company[];
-    total: number;
-}
-
-export class ResponseCompanyAll implements IResponseCompanyAll {
+export class ResponseCompanyAll {
     total: number;
     data: Company[];
 }

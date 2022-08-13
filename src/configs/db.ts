@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import {
-  Company, CompanyType, DocumentStatus, Department
+  Company, CompanyType, DocumentStatus, Department, Staff
 } from "../entities"
 
 export default class DB {
@@ -22,7 +22,7 @@ export default class DB {
         Company,
         DocumentStatus,
         Department,
-        // Staff,
+        Staff,
       ]
     })
   }
@@ -39,8 +39,8 @@ export default class DB {
     return this._appDataSource.getRepository(Department)
   }
 
-  // static getStaffRepository = () => {
-  //   return this._appDataSource.getRepository(Staff)
-  // }
+  static getStaffRepository = () => {
+    return this._appDataSource.getRepository(Staff)
+  }
 }
 

@@ -1,3 +1,5 @@
+import * as bcrypt from "bcryptjs";
+
 const checkActive = (string) => {
     if (string === 'true') {
         return true
@@ -7,4 +9,12 @@ const checkActive = (string) => {
     return undefined
 }
 
-export { checkActive }
+const hashPassword = (password: string) => {
+    return bcrypt.hashSync(password, 8);
+}
+
+const checkIfUnencryptedPasswordIsValid = (unencryptedPassword: string, password: string) => {
+    return bcrypt.compareSync(unencryptedPassword, password);
+}
+
+export { checkActive, hashPassword, checkIfUnencryptedPasswordIsValid }

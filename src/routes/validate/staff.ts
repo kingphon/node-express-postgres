@@ -19,10 +19,12 @@ class StaffValidate {
   };
 
   static newStaff = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, department } = req.body;
+    const { name, phone, password, department } = req.body;
     const staff = new RequestStaffCreate();
     
     staff.name = name;
+    staff.phone = phone;
+    staff.password = password;
     staff.departmentId = department;
 
     const errors = await validate(staff);
@@ -38,11 +40,13 @@ class StaffValidate {
 
   static editStaff = async (req: Request, res: Response, next: NextFunction) => {
     const id: any = req.params.id;
-    const { name, department } = req.body;
+    const { name, phone, password, department } = req.body;
     const staff = new RequestStaffUpdate();
 
     staff.id = id;
     staff.name = name;
+    staff.phone = phone;
+    staff.password = password;
     staff.departmentId = department;
 
     const errors = await validate(staff);

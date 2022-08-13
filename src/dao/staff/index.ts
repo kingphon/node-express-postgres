@@ -1,82 +1,59 @@
-// import { validate } from "class-validator";
-// import { Request, Response } from "express";
-// import { AppDataSource } from "../../configs/db";
-// import { DEPARTMENT_NOT_EXIST, STAFF_NOT_EXIST } from "../../const/error";
-// import { Staff } from "../../entities";
-// import { checkActive } from "../../utils/helper";
-// import { r200, r400, r404 } from "../../utils/response";
+import { FindManyOptions, FindOneOptions } from "typeorm";
+import DB from "../../configs/db";
+import { COMMON_ERROR, COMPANY_NOT_EXIST, TYPE_NOT_EXIST } from "../../const/error";
+import { Staff } from "../../entities";
+import { RequestStaffCreate } from "../../models/request/staff";
 
-// const staffRepository = AppDataSource.getRepository(Staff)
 
-// class StaffService {
+class StaffDAO {
 
-//   static listAll = (filter) => {
+  static findAndCount = (query: FindManyOptions<Staff>): Promise<[Staff[], number]> => {
+    const staffRepository = DB.getStaffRepository()
+    return staffRepository.findAndCount(query);
+  };
 
-//     let query = staffRepository.createQueryBuilder('staff')
-//       .select([
-//         'staff.id',
-//         'staff.name',
-//         'staff.phone',
-//         'staff.isRoot',
-//         'staff.active',
-//         'staff.createdAt',
-//         'department.id',
-//         'department.name'
-//       ])
-//       .leftJoin('staff.department', 'department')
-//       .skip(Number(filter.page) * Number(filter.limit))
-//       .take(Number(filter.limit))
-//       .orderBy({
-//         "staff.createdAt": "DESC",
-//       })
+  static create = (staff: Staff): string | null => {
+    const staffRepository = DB.getStaffRepository()
 
-//     if (checkActive(filter.active) !== undefined) {
-//       query = query.where("department.active = :active", { active: checkActive(filter.active) })
-//     }
+    let err: string | null = null;
 
-//     return query.getManyAndCount();
+    try {
+      staffRepository.save(staff);
+    } catch (e) {
+      err = COMPANY_NOT_EXIST;
+    }
 
-//   };
+    return err
+  };
 
-//   static newStaff = (staff: Staff) => {
+  static update = (staff: Staff): string | null => {
+    const staffRepository = DB.getStaffRepository()
 
-//     try {
-//       staffRepository.save(staff);
-//     } catch (e) {
-//       return DEPARTMENT_NOT_EXIST;
-//     }
+    let err: string | null = null;
 
-//     return null
-//   };
+    try {
+      staffRepository.createQueryBuilder("staff").update(staff).where({ id: staff.id }).returning('*').execute();
+    } catch (e) {
+      err = COMMON_ERROR;
+    }
 
-//   static editStaff = (staff: Staff) => {
+    return err
+  };
 
-//     try {
-//       staffRepository.createQueryBuilder()
-//         .update(staff)
-//         .where({ id: staff.id })
-//         .returning('*')
-//         .execute();
-//     } catch (e) {
-//       return DEPARTMENT_NOT_EXIST;
-//     }
+  static findOneWithCondition = async (query: FindOneOptions<Staff>): Promise<[Staff, string | null]> => {
+    const staffRepository = DB.getStaffRepository()
 
-//     return null
-//   };
+    let err: string | null = null;
 
-//   static changeStatusStaff = (staff: Staff) => {
-//     try {
-//       staffRepository.createQueryBuilder()
-//         .update(staff)
-//         .where({ id: staff.id })
-//         .returning('*')
-//         .execute();
-//     } catch (e) {
-//       return DEPARTMENT_NOT_EXIST;
-//     }
+    try {
+      const staff = await staffRepository.findOneOrFail(query);
+      return [staff, err]
+    } catch (e) {
+      err = COMMON_ERROR;
+    }
 
-//     return null
-//   };
-// };
+    return [null, err]
+  };
+};
 
-// export default StaffService;
+export default StaffDAO;

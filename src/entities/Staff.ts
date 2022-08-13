@@ -19,10 +19,10 @@ export default class Staffs {
   @Column()
   password?: string;
 
-  @Column()
+  @Column({default: false})
   active?: boolean;
 
-  @Column()
+  @Column({default: false})
   isRoot?: boolean;
 
   @Column()
@@ -36,13 +36,4 @@ export default class Staffs {
 
   @ManyToOne(() => Department, (department) => department.staffs)
   department: string
-
-  hashPassword() {
-    this.password = bcrypt.hashSync(this.password, 8);
-  }
-
-  checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-    return bcrypt.compareSync(unencryptedPassword, this.password);
-  }
-
 }

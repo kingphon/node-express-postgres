@@ -7,6 +7,7 @@ import DB from "../configs/db";
 import initDB from "../configs/init";
 import company from "./company";
 import department from "./department";
+import staff from "./staff";
 
 const routes = (app: Express) => {
     dotenv.config()
@@ -27,6 +28,7 @@ const routes = (app: Express) => {
 
     company(app)
     department(app)
+    staff(app)
 }
 
 export default routes
