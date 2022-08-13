@@ -1,38 +1,31 @@
 import { validate } from "class-validator";
 import { Request, Response } from "express";
-import { AppDataSource } from "../../configs/db";
 import { COMMON_ERROR, COMPANY_NOT_EXIST, DEPARTMENT_NOT_EXIST, STORAGE_IS_MAX_LIMIT, TYPE_NOT_EXIST } from "../../const/error";
-import { Department } from "../../models";
-import DepartmentService from "../../services/department";
+import { Company, Department } from "../../entities";
 import { checkActive } from "../../utils/helper";
 import { r200, r400, r404 } from "../../utils/response";
+import { RequestDepartmentAll } from "../../models/request/department";
+import DepartmentService from "../../services/department";
+import CompanyService from "../../services/company";
 
 class DepartmentController {
 
   static listAll = async (req: Request, res: Response) => {
-    const { active, limit, page } = req.query
-    const tempLimit = limit || 20
-    const tempPage = page || 0
+    const filter: RequestDepartmentAll = res.locals.departmentAll
 
-    const [departments, total] = await DepartmentService.listAll({ active, limit: tempLimit, page: tempPage });
+    const result = await DepartmentService.listAll(filter)
 
-    r200(res, { data: departments, total, limit: tempLimit, page: tempPage })
+    r200(res, { ...result, ...filter })
   };
 
   static newDepartment = async (req: Request, res: Response) => {
-    const { name, companyId } = req.body;
-    const department = new Department();
+    const department: Department = res.locals.departmentCreate
 
-    department.name = name;
-    department.companyId = companyId;
-    department.company = companyId;
-    department.active = false;
+    const [_, errFindOne] = await CompanyService.findOneWithId(department.companyId)
 
-    const errors = await validate(department);
-    if (errors.length > 0) {
-      const error = (errors[0].constraints[Object.keys(errors[0].constraints)[0]])
-      r400(res, error)
-      return;
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
     }
 
     const err = DepartmentService.newDepartment(department)
@@ -45,67 +38,50 @@ class DepartmentController {
   };
 
   static editDepartment = async (req: Request, res: Response) => {
-    const id: any = req.params.departmentId;
-    const { name, companyId } = req.body;
+    const department: Department = res.locals.departmentUpdate
 
-    const departmentRepository = AppDataSource.getRepository(Department)
-    try {
-      const department = await departmentRepository.findOneOrFail({
-        where: {
-          id: id
-        }
-      });
+    const [_, errFindOneCompany] = await CompanyService.findOneWithId(department.companyId)
 
-      department.name = name;
-      department.companyId = companyId;
-      department.company = companyId;
-      department.updatedAt = new Date().toISOString()
-
-      const errors = await validate(department);
-      if (errors.length > 0) {
-        const error = (errors[0].constraints[Object.keys(errors[0].constraints)[0]])
-        r400(res, error)
-        return;
-      }
-
-      const err = DepartmentService.editDepartment(department)
-  
-      if (err) {
-        r400(res, err)
-      }
-
-      r200(res, {})
-    } catch (error) {
-      r404(res, DEPARTMENT_NOT_EXIST)
-      return;
+    if (errFindOneCompany) {
+      r404(res, errFindOneCompany)
+      return
     }
+
+    const [departmentFindOne, errFindOne] = await DepartmentService.findOneWithId(department.id)
+
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
+    }
+
+    const errUpdate = DepartmentService.editDepartment(departmentFindOne, department)
+
+    if (errUpdate) {
+      r404(res, errUpdate)
+      return
+    }
+
+    r200(res, {})
   };
 
   static changeStatusDepartment = async (req: Request, res: Response) => {
-    const id: any = req.params.departmentId;
+    const department: Department = res.locals.departmentUpdate
 
-    const departmentRepository = AppDataSource.getRepository(Department)
-    try {
-      const department = await departmentRepository.findOneOrFail({
-        where: {
-          id: id
-        }
-      });
+    const [departmentFindOne, errFindOne] = await DepartmentService.findOneWithId(department.id)
 
-      department.active = !department.active;
-      department.updatedAt = new Date().toISOString()
-
-      const err = DepartmentService.changeStatusDepartment(department)
-  
-      if (err) {
-        r400(res, err)
-      }
-
-      r200(res, {})
-    } catch (error) {
-      r404(res, DEPARTMENT_NOT_EXIST)
-      return;
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
     }
+
+    const errUpdate = DepartmentService.changStatusDepartment(departmentFindOne)
+
+    if (errUpdate) {
+      r404(res, errUpdate)
+      return
+    }
+
+    r200(res, {})
   };
 };
 

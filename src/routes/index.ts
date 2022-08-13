@@ -1,14 +1,32 @@
-import { Router } from "express";
+import * as bodyParser from "body-parser";
+import * as cors from "cors";
+import * as dotenv from 'dotenv';
+import { Express } from "express";
+import helmet from "helmet";
+import DB from "../configs/db";
+import initDB from "../configs/init";
 import company from "./company";
 import department from "./department";
-import staff from "./staff";
 
-const routes = Router();
+const routes = (app: Express) => {
+    dotenv.config()
 
-routes.use("/company", company);
+    app.use(cors());
+    app.use(helmet());
+    app.use(bodyParser.json());
 
-routes.use("/department", department);
 
-routes.use("/staff", staff);
 
-export default routes;
+    DB.setAppDataSource(process.env)
+    const dataSource = DB.getAppDataSource()
+
+
+    dataSource.initialize().then(async () => {
+        initDB();
+    }).catch(error => console.log(error))
+
+    company(app)
+    department(app)
+}
+
+export default routes

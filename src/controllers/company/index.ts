@@ -1,40 +1,21 @@
-import { validate } from "class-validator";
 import { Request, Response } from "express";
-import { AppDataSource } from "../../configs/db";
-import { COMMON_ERROR, COMPANY_NOT_EXIST, STORAGE_IS_MAX_LIMIT, TYPE_NOT_EXIST } from "../../const/error";
-import { Company } from "../../models";
+import { Company } from "../../entities";
+import { RequestCompanyAll } from "../../models/request/company";
 import CompanyService from "../../services/company";
-import { checkActive } from "../../utils/helper";
 import { r200, r400, r404 } from "../../utils/response";
 
 class CompanyController {
 
   static listAll = async (req: Request, res: Response) => {
-    const { active, limit, page, typeId } = req.query
-    const tempLimit = limit || 20
-    const tempPage = page || 0
-    const tempType = typeId ? String(typeId) : undefined
+    const filter: RequestCompanyAll = res.locals.companyAll
 
-    const [companies, total] = await CompanyService.listAll({limit: tempLimit, page: tempPage, type: tempType, active})
+    const result = await CompanyService.listAll(filter)
 
-    r200(res, { data: companies, total, limit: tempLimit, page: tempPage })
+    r200(res, { ...result, ...filter })
   };
 
   static newCompany = async (req: Request, res: Response) => {
-    const { name } = req.body;
-    const company = new Company();
-
-    company.name = name;
-    company.typeId = 'normal';
-    company.type = 'normal';
-    company.active = false;
-
-    const errors = await validate(company);
-    if (errors.length > 0) {
-      const error = (errors[0].constraints[Object.keys(errors[0].constraints)[0]])
-      r400(res, error)
-      return;
-    }
+    const company: Company = res.locals.companyCreate
 
     const err = CompanyService.newCompany(company)
 
@@ -46,102 +27,63 @@ class CompanyController {
   };
 
   static editCompany = async (req: Request, res: Response) => {
-    const id: any = req.params.companyId;
-    const { name } = req.body;
+    const company: Company = res.locals.companyUpdate
 
-    const companyRepository = AppDataSource.getRepository(Company)
-    try {
-      const company = await companyRepository.findOneOrFail({
-        where: {
-          id: id
-        }
-      });
-      
-      company.name = name;
-      company.updatedAt = new Date().toISOString()
+    const [companyFindOne, errFindOne] = await CompanyService.findOneWithId(company.id)
 
-      const errors = await validate(company);
-      if (errors.length > 0) {
-        const error = (errors[0].constraints[Object.keys(errors[0].constraints)[0]])
-        r400(res, error)
-        return;
-      }
-
-      const err = CompanyService.editCompany(company)
-
-      if (err) {
-        r400(res, err)
-      }
-
-      r200(res, {})
-    } catch (error) {
-      r404(res, COMPANY_NOT_EXIST)
-      return;
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
     }
+
+    const errUpdate = CompanyService.editCompany(companyFindOne, company)
+
+    if (errUpdate) {
+      r404(res, errUpdate)
+      return
+    }
+
+    r200(res, {})
   };
 
   static changeStatusCompany = async (req: Request, res: Response) => {
-    const id: any = req.params.companyId;
+    const company: Company = res.locals.companyUpdate
 
-    const companyRepository = AppDataSource.getRepository(Company)
-    try {
-      const company = await companyRepository.findOneOrFail({
-        where: {
-          id: id
-        }
-      });
+    const [companyFindOne, errFindOne] = await CompanyService.findOneWithId(company.id)
 
-      company.active = !company.active;
-      company.updatedAt = new Date().toISOString()
-
-      const err = CompanyService.changeStatusCompany(company)
-
-      if (err) {
-        r400(res, err)
-      }
-
-      r200(res, {})
-    } catch (error) {
-      r404(res, COMPANY_NOT_EXIST)
-      return;
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
     }
+
+    const errUpdate = CompanyService.changStatusCompany(companyFindOne)
+
+    if (errUpdate) {
+      r404(res, errUpdate)
+      return
+    }
+
+    r200(res, {})
   };
 
   static changeTypeCompanyToStorage = async (req: Request, res: Response) => {
-    const id: any = req.params.companyId;
+    const company: Company = res.locals.companyUpdate
 
-    const companyRepository = AppDataSource.getRepository(Company)
-    try {
-      const company = await companyRepository.findOneOrFail({
-        where: {
-          id: id
-        }
-      });
+    const [companyFindOne, errFindOne] = await CompanyService.findOneWithId(company.id)
 
-      const [companies, total] = await companyRepository.findAndCount({
-        where: { typeId: 'storage' }
-      });
-
-      if (total) {
-        r400(res, STORAGE_IS_MAX_LIMIT)
-        return;
-      }
-
-      company.type = 'storage';
-      company.typeId = 'storage';
-      company.updatedAt = new Date().toISOString()
-
-      const err = CompanyService.changeTypeCompanyToStorage(company)
-
-      if (err) {
-        r400(res, err)
-      }
-
-      r200(res, {})
-    } catch (error) {
-      r404(res, COMPANY_NOT_EXIST)
-      return;
+    if (errFindOne) {
+      r404(res, errFindOne)
+      return
     }
+
+    const errUpdate = CompanyService.changTypeToStorageCompany(companyFindOne)
+
+    if (errUpdate) {
+      r404(res, errUpdate)
+      return
+    }
+
+    r200(res, {})
   };
 };
 

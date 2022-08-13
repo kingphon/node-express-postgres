@@ -1,6 +1,7 @@
-import { COMMON_ERROR, COMPANY_IS_EMPTY, COMPANY_NOT_EXIST, DEPARTMENT_IS_EMPTY, DEPARTMENT_NOT_EXIST, NAME_IS_EMPTY, PASSWORD_IS_EMPTY, STAFF_NOT_EXIST, STORAGE_IS_MAX_LIMIT, TYPE_IS_EMPTY, TYPE_NOT_EXIST, WRONG_COMPANY_TYPE, WRONG_COMPANY_TYPE_TYPE, WRONG_DEPARTMENT_TYPE, WRONG_NAME_TYPE } from "../const/error";
+import { COMMON_ERROR, COMPANY_IS_EMPTY, COMPANY_NOT_EXIST, DEPARTMENT_IS_EMPTY, DEPARTMENT_NOT_EXIST, ID_IS_EMPTY, NAME_IS_EMPTY, PASSWORD_IS_EMPTY, STAFF_NOT_EXIST, STORAGE_IS_MAX_LIMIT, TYPE_IS_EMPTY, TYPE_NOT_EXIST, WRONG_COMPANY_TYPE, WRONG_COMPANY_TYPE_TYPE, WRONG_DEPARTMENT_TYPE, WRONG_NAME_TYPE } from "../const/error";
+import { IError } from "../models/common";
 
-export const errorList = [
+export const errorList: IError[] = [
     {
         type: COMMON_ERROR,
         message: 'đã xảy ra lỗi'
@@ -64,5 +65,9 @@ export const errorList = [
     {
         type: STAFF_NOT_EXIST,
         message: 'nhân viên không tồn tại'
+    },
+    {
+        type: ID_IS_EMPTY,
+        message: 'id không được trống'
     },
 ]

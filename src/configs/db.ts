@@ -1,23 +1,46 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import {
-    Company, Department, Staff, CompanyType, DocumentStatus
-} from "../models"
+  Company, CompanyType, DocumentStatus, Department
+} from "../entities"
 
-export const AppDataSource = new DataSource({
-    type: 'postgres',
-    username: "postgres",
-    host: "localhost",
-    database: "document_admin",
-    password: "yourpassword",
-    port: 5432,
-    synchronize: true,
-    logging: false,
-    entities: [
+export default class DB {
+  private static _appDataSource: DataSource
+  
+  static setAppDataSource = (env: NodeJS.ProcessEnv) => {
+    this._appDataSource = new DataSource({
+      type: 'postgres',
+      username: env.DB_USERNAME,
+      host: env.DB_HOST,
+      database: env.DB_NAME,
+      password: env.DB_PASSWORD,
+      port: Number(env.DB_PORT),
+      synchronize: true,
+      logging: false,
+      entities: [
         CompanyType,
         Company,
         DocumentStatus,
         Department,
-        Staff,
-    ]
-})
+        // Staff,
+      ]
+    })
+  }
+  
+  static getAppDataSource = () => {
+    return this._appDataSource
+  }
+
+  static getCompanyRepository = () => {
+    return this._appDataSource.getRepository(Company)
+  }
+
+  static getDepartmentRepository = () => {
+    return this._appDataSource.getRepository(Department)
+  }
+
+  // static getStaffRepository = () => {
+  //   return this._appDataSource.getRepository(Staff)
+  // }
+}
+
