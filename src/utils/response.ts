@@ -16,3 +16,8 @@ export const r404 = (res: Response, errorType: string | null) => {
     const error: IError = errorList.filter(err => errorType ? err.type === errorType : err.type === COMMON_ERROR)[0]
     return res.status(404).send({ message: error.message })
 }
+
+export const r401 = (res: Response, errorType: string | null) => {
+    const error: IError = errorList.filter(err => errorType ? err.type === errorType : err.type === COMMON_ERROR)[0]
+    return res.status(401).send({ message: error.message })
+}

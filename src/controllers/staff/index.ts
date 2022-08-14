@@ -61,7 +61,7 @@ class StaffController {
       return
     }
 
-    const [staffFindOneByPhone, errStaffFindOneByPhone] = await StaffService.findOneWithPhone(staff.phone)
+    const [staffFindOneByPhone, errStaffFindOneByPhone] = await StaffService.findOneWithPhone(staff.phone, staff.id)
 
     if (staffFindOneByPhone) {
       r404(res, PHONE_IS_EXIST)

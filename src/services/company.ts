@@ -37,11 +37,9 @@ class CompanyService {
   };
 
   static findOneWithId = async (id: string): Promise<[Company | null, string | null]> => {
-    const company = new Company()
-    company.id = id
     const query: FindOneOptions<Company> = {
       where: {
-        id: company.id,
+        id,
       },
     }
     return await CompanyDAO.findOneWithCondition(query)

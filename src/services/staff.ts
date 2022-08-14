@@ -49,20 +49,42 @@ class StaffService {
   };
 
   static findOneWithPhone = async (phone: string, id?: string): Promise<[Staff | null, string | null]> => {
-    const staff = new Staff()
-    staff.phone = phone
     const query: FindOneOptions<Staff> = {
       where: {
-        phone: staff.phone,
-        id: Not(id)
+        phone
       },
+    }
+
+    if (id) {
+      query.where = {
+        phone,
+        id: Not(id)
+      }
+    }
+    
+    return await StaffDAO.findOneWithCondition(query)
+  };
+
+  static findOneFullInfoWithPhone = async (phone: string, id?: string): Promise<[Staff | null, string | null]> => {
+    const query: FindOneOptions<Staff> = {
+      where: {
+        phone,
+      },
+      relations: ['department', 'department.company'],
+    }
+
+    if (id) {
+      query.where = {
+        phone,
+        id: Not(id)
+      }
     }
     return await StaffDAO.findOneWithCondition(query)
   };
 
-  static editStaff = (staff: Staff, requestStaff: Staff): string | null => {
+  static editStaff = (staff: Staff, requestStaff: Staff = new Staff()): string | null => {
     const editStaff = { ...staff, ...requestStaff }
-    editStaff.password = hashPassword(staff.password)
+    editStaff.password = hashPassword(editStaff.password)
     return StaffDAO.update(editStaff)
   };
 

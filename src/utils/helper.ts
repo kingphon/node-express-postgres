@@ -13,8 +13,8 @@ const hashPassword = (password: string) => {
     return bcrypt.hashSync(password, 8);
 }
 
-const checkIfUnencryptedPasswordIsValid = (unencryptedPassword: string, password: string) => {
-    return bcrypt.compareSync(unencryptedPassword, password);
+const checkIfUnencryptedPasswordIsValid = (password: string, encryptedPassword: string) => {
+    return bcrypt.compareSync(password, encryptedPassword);
 }
 
 export { checkActive, hashPassword, checkIfUnencryptedPasswordIsValid }

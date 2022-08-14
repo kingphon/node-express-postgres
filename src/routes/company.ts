@@ -18,6 +18,8 @@ const company = (app: Express) => {
     *   get:
     *     summary: Get company list
     *     tags: [Company]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: query
     *         name: page
@@ -73,6 +75,8 @@ const company = (app: Express) => {
     *   post:
     *     summary: Create company
     *     tags: [Company]
+    *     security:              
+    *      - bearerAuth: []
     *     requestBody:
     *       required: true
     *       content:
@@ -107,6 +111,8 @@ const company = (app: Express) => {
     *   put:
     *     summary: Update company
     *     tags: [Company]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         name: id
@@ -146,6 +152,8 @@ const company = (app: Express) => {
     *   patch:
     *     summary: Update status company
     *     tags: [Company]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         required: true
@@ -177,6 +185,8 @@ const company = (app: Express) => {
     *   patch:
     *     summary: change type company to storage
     *     tags: [Company]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         required: true

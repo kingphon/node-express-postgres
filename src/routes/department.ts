@@ -19,6 +19,8 @@ const department = (app: Express) => {
     *   get:
     *     summary: Get department list
     *     tags: [Department]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: query
     *         name: page
@@ -73,6 +75,8 @@ const department = (app: Express) => {
     *   post:
     *     summary: Create department
     *     tags: [Department]
+    *     security:              
+    *      - bearerAuth: []
     *     requestBody:
     *       required: true
     *       content:
@@ -109,6 +113,8 @@ const department = (app: Express) => {
     *   put:
     *     summary: Update department
     *     tags: [Department]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         name: id
@@ -150,6 +156,8 @@ const department = (app: Express) => {
     *   patch:
     *     summary: Update status department
     *     tags: [Department]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         required: true

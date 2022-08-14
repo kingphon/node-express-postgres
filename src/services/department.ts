@@ -37,11 +37,9 @@ class DepartmentService {
   };
 
   static findOneWithId = async (id: string): Promise<[Department | null, string | null]> => {
-    const department = new Department()
-    department.id = id
     const query: FindOneOptions<Department> = {
       where: {
-        id: department.id,
+        id,
       },
     }
     return await DepartmentDAO.findOneWithCondition(query)

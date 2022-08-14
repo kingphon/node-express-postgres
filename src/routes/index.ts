@@ -5,6 +5,7 @@ import { Express } from "express";
 import helmet from "helmet";
 import DB from "../configs/db";
 import initDB from "../configs/init";
+import auth from "./auth";
 import company from "./company";
 import department from "./department";
 import staff from "./staff";
@@ -29,6 +30,7 @@ const routes = (app: Express) => {
     company(app)
     department(app)
     staff(app)
+    auth(app)
 }
 
 export default routes

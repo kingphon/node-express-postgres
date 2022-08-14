@@ -18,6 +18,8 @@ import StaffValidate from "./validate/staff";
     *   get:
     *     summary: Get staff list
     *     tags: [Staff]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: query
     *         name: page
@@ -72,6 +74,8 @@ import StaffValidate from "./validate/staff";
     *   post:
     *     summary: Create staff
     *     tags: [Staff]
+    *     security:              
+    *      - bearerAuth: []
     *     requestBody:
     *       required: true
     *       content:
@@ -112,6 +116,8 @@ import StaffValidate from "./validate/staff";
     *   put:
     *     summary: Update staff
     *     tags: [Staff]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         name: id
@@ -157,6 +163,8 @@ import StaffValidate from "./validate/staff";
     *   patch:
     *     summary: Update status staff
     *     tags: [Staff]
+    *     security:              
+    *      - bearerAuth: []
     *     parameters:
     *       - in: path
     *         required: true
