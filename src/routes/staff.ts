@@ -1,7 +1,6 @@
-import { Router, Express } from "express";
+import { Express, Router } from "express";
 import StaffController from "../controllers/staff";
-import { checkJwt } from "../middlewares/checkJwt";
-import StaffValidate from "./validate/staff";
+import validate from "./validate";
 
 /**
  * @openapi
@@ -9,189 +8,191 @@ import StaffValidate from "./validate/staff";
  *  name: Staff
  */
 
-
- const staff = (app: Express) => {
+const staff = (app: Express) => {
   const r = Router();
-  app.use('/staff', r);
+  app.use("/staff", r);
   /**
-    * @openapi
-    * /staff:
-    *   get:
-    *     summary: Get staff list
-    *     tags: [Staff]
-    *     security:              
-    *      - bearerAuth: []
-    *     parameters:
-    *       - in: query
-    *         name: page
-    *         schema:
-    *           type: string
-    *       - in: query
-    *         name: limit
-    *         schema:
-    *           type: string
-    *       - in: query
-    *         name: active
-    *         description: available value (true, false)
-    *         schema:
-    *           type: string
-    *       - in: query
-    *         name: department
-    *         schema:
-    *           type: string
-    *     responses:
-    *       200:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string 
-    *                 data:
-    *                   type: array
-    *                   items:
-    *                     type: object
-    *                     properties:
-    *                       id:
-    *                         type: string
-    *                       name:
-    *                         type: string
-    *                       active:
-    *                         type: boolean
-    *                       companyId:
-    *                         type: string
-    *                 total: 
-    *                    type: number 
-    *                 limit: 
-    *                    type: number 
-    *                 page: 
-    *                    type: number 
-    */
-  r.get("/", [checkJwt, StaffValidate.listAll], StaffController.listAll);
+   * @openapi
+   * /staff:
+   *   get:
+   *     summary: Get staff list
+   *     tags: [Staff]
+   *     security:
+   *      - bearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: limit
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: active
+   *         description: available value (true, false)
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: department
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: string
+   *                       name:
+   *                         type: string
+   *                       active:
+   *                         type: boolean
+   *                       companyId:
+   *                         type: string
+   *                 total:
+   *                    type: number
+   *                 limit:
+   *                    type: number
+   *                 page:
+   *                    type: number
+   */
+  r.get("/", [validate.staff.listAll], StaffController.listAll);
   /**
-    * @openapi
-    * /staff:
-    *   post:
-    *     summary: Create staff
-    *     tags: [Staff]
-    *     security:              
-    *      - bearerAuth: []
-    *     requestBody:
-    *       required: true
-    *       content:
-    *         application/json:
-    *           schema:
-    *             type: object
-    *             properties:
-    *               name:
-    *                 type: string
-    *               phone:
-    *                 type: string
-    *               password:
-    *                 type: string
-    *               departmentId:
-    *                 type: string
-    *     responses:
-    *       200:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string
-    *       400:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string
-    */
-  r.post("/", [checkJwt, StaffValidate.newStaff], StaffController.newStaff);
+   * @openapi
+   * /staff:
+   *   post:
+   *     summary: Create staff
+   *     tags: [Staff]
+   *     security:
+   *      - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *               phone:
+   *                 type: string
+   *               password:
+   *                 type: string
+   *               departmentId:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   *       400:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   */
+  r.post("/", [validate.staff.newStaff], StaffController.newStaff);
   /**
-    * @openapi
-    * /staff/{id}:
-    *   put:
-    *     summary: Update staff
-    *     tags: [Staff]
-    *     security:              
-    *      - bearerAuth: []
-    *     parameters:
-    *       - in: path
-    *         name: id
-    *         schema:
-    *           type: string
-    *     requestBody:
-    *       required: true
-    *       content:
-    *         application/json:
-    *           schema:
-    *             type: object
-    *             properties:
-    *               name:
-    *                 type: string
-    *               phone:
-    *                 type: string
-    *               password:
-    *                 type: string
-    *               departmentId:
-    *                 type: string
-    *     responses:
-    *       200:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string
-    *       400:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string
-    */
-  r.put("/:id", [checkJwt, StaffValidate.editStaff], StaffController.editStaff);
+   * @openapi
+   * /staff/{id}:
+   *   put:
+   *     summary: Update staff
+   *     tags: [Staff]
+   *     security:
+   *      - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *               phone:
+   *                 type: string
+   *               password:
+   *                 type: string
+   *               departmentId:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   *       400:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   */
+  r.put("/:id", [validate.staff.editStaff], StaffController.editStaff);
   /**
-    * @openapi
-    * /staff/{id}/active:
-    *   patch:
-    *     summary: Update status staff
-    *     tags: [Staff]
-    *     security:              
-    *      - bearerAuth: []
-    *     parameters:
-    *       - in: path
-    *         required: true
-    *         name: id
-    *         schema:
-    *           type: string
-    *     responses:
-    *       200:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string
-    *       400:
-    *         content:
-    *           application/json:
-    *             schema:
-    *               type: object
-    *               properties:
-    *                 message: 
-    *                    type: string
-    */
-  r.patch("/:id/active", [checkJwt, StaffValidate.changeStatusStaff], StaffController.changeStatusStaff);
-}
-
+   * @openapi
+   * /staff/{id}/active:
+   *   patch:
+   *     summary: Update status staff
+   *     tags: [Staff]
+   *     security:
+   *      - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         required: true
+   *         name: id
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   *       400:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                    type: string
+   */
+  r.patch(
+    "/:id/active",
+    [validate.staff.changeStatusStaff],
+    StaffController.changeStatusStaff
+  );
+};
 
 export default staff;
