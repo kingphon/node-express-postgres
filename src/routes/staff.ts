@@ -1,5 +1,6 @@
 import { Router, Express } from "express";
 import StaffController from "../controllers/staff";
+import { checkJwt } from "../middlewares/checkJwt";
 import StaffValidate from "./validate/staff";
 
 /**
@@ -67,7 +68,7 @@ import StaffValidate from "./validate/staff";
     *                 page: 
     *                    type: number 
     */
-  r.get("/", [StaffValidate.listAll], StaffController.listAll);
+  r.get("/", [checkJwt, StaffValidate.listAll], StaffController.listAll);
   /**
     * @openapi
     * /staff:
@@ -109,7 +110,7 @@ import StaffValidate from "./validate/staff";
     *                 message: 
     *                    type: string
     */
-  r.post("/", [StaffValidate.newStaff], StaffController.newStaff);
+  r.post("/", [checkJwt, StaffValidate.newStaff], StaffController.newStaff);
   /**
     * @openapi
     * /staff/{id}:
@@ -156,7 +157,7 @@ import StaffValidate from "./validate/staff";
     *                 message: 
     *                    type: string
     */
-  r.put("/:id", [StaffValidate.editStaff], StaffController.editStaff);
+  r.put("/:id", [checkJwt, StaffValidate.editStaff], StaffController.editStaff);
   /**
     * @openapi
     * /staff/{id}/active:
@@ -189,7 +190,7 @@ import StaffValidate from "./validate/staff";
     *                 message: 
     *                    type: string
     */
-  r.patch("/:id/active", [StaffValidate.changeStatusStaff], StaffController.changeStatusStaff);
+  r.patch("/:id/active", [checkJwt, StaffValidate.changeStatusStaff], StaffController.changeStatusStaff);
 }
 
 
