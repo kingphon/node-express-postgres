@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { PHONE_IS_EXIST } from "../../const/error";
-import { Staff } from "../../entities";
-import { RequestStaffAll } from "../../models/request/staff";
-import services from "../../services";
-import { r200, r400, r404 } from "../../utils/response";
+import { PHONE_IS_EXIST } from "../const/error";
+import { Staff } from "../entities";
+import { RequestStaffAll } from "../models/request/staff";
+import services from "../services";
+import { r200, r400, r404 } from "../utils/response";
 
 class StaffController {
 
