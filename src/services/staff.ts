@@ -1,97 +1,112 @@
 import { FindManyOptions, FindOneOptions, Not } from "typeorm";
-import StaffDAO from "../dao/staff";
+import dao from "../dao";
 import { Staff } from "../entities";
 import { RequestStaffAll } from "../models/request/staff";
 import { ResponseStaffAll } from "../models/response/staff";
-import { checkActive, hashPassword } from "../utils/helper";
+import helper from "../utils/helper";
 
-class StaffService {
-
-  static listAll = async (filter: RequestStaffAll): Promise<ResponseStaffAll> => {
-    const query: FindManyOptions<Staff> = {
-      select: ['id', 'name', 'phone', 'active', 'isRoot', 'createdAt', 'departmentId'],
-      skip: Number(filter.page) * Number(filter.limit),
-      take: Number(filter.limit),
-      where: {
-        active: checkActive(filter.active),
-        departmentId: filter.department,
-      },
-      order: {
-        updatedAt: "DESC",
-        createdAt: "DESC",
-      }
-    }
-
-    const [staffs, total] = await StaffDAO.findAndCount(query)
-
-    const result = new ResponseStaffAll()
-
-    result.data = staffs
-    result.total = total
-
-    return result
+const listAll = async (filter: RequestStaffAll): Promise<ResponseStaffAll> => {
+  const query: FindManyOptions<Staff> = {
+    select: ["id", "name", "phone", "active", "isRoot", "createdAt"],
+    skip: Number(filter.page) * Number(filter.limit),
+    take: Number(filter.limit),
+    where: {
+      active: helper.checkActive(filter.active),
+    },
+    order: {
+      updatedAt: "DESC",
+      createdAt: "DESC",
+    },
   };
 
-  static newStaff = (staff: Staff): string | null => {
-    staff.password = hashPassword(staff.password)
-    return StaffDAO.create(staff)
-  };
+  const [staffs, total] = await dao.staff.findAndCount(query);
 
-  static findOneWithId = async (id: string): Promise<[Staff | null, string | null]> => {
-    const staff = new Staff()
-    staff.id = id
-    const query: FindOneOptions<Staff> = {
-      where: {
-        id: staff.id,
-      },
-    }
-    return await StaffDAO.findOneWithCondition(query)
-  };
+  const result = new ResponseStaffAll();
 
-  static findOneWithPhone = async (phone: string, id?: string): Promise<[Staff | null, string | null]> => {
-    const query: FindOneOptions<Staff> = {
-      where: {
-        phone
-      },
-    }
+  result.data = staffs;
+  result.total = total;
 
-    if (id) {
-      query.where = {
-        phone,
-        id: Not(id)
-      }
-    }
-    
-    return await StaffDAO.findOneWithCondition(query)
-  };
-
-  static findOneFullInfoWithPhone = async (phone: string, id?: string): Promise<[Staff | null, string | null]> => {
-    const query: FindOneOptions<Staff> = {
-      where: {
-        phone,
-      },
-      relations: ['department', 'department.company'],
-    }
-
-    if (id) {
-      query.where = {
-        phone,
-        id: Not(id)
-      }
-    }
-    return await StaffDAO.findOneWithCondition(query)
-  };
-
-  static editStaff = (staff: Staff, requestStaff: Staff = new Staff()): string | null => {
-    const editStaff = { ...staff, ...requestStaff }
-    editStaff.password = hashPassword(editStaff.password)
-    return StaffDAO.update(editStaff)
-  };
-
-  static changStatusStaff = (staff: Staff): string | null => {
-    staff.active = !staff.active
-    return StaffDAO.update(staff)
-  };
+  return result;
 };
 
-export default StaffService;
+const newStaff = (staff: Staff): string | null => {
+  staff.password = helper.hashPassword(staff.password);
+  return dao.staff.create(staff);
+};
+
+const findOneWithId = async (
+  id: string
+): Promise<[Staff | null, string | null]> => {
+  const staff = new Staff();
+  staff.id = id;
+  const query: FindOneOptions<Staff> = {
+    where: {
+      id: staff.id,
+    },
+  };
+  return await dao.staff.findOneWithCondition(query);
+};
+
+const findOneWithPhone = async (
+  phone: string,
+  id?: string
+): Promise<[Staff | null, string | null]> => {
+  const query: FindOneOptions<Staff> = {
+    where: {
+      phone,
+    },
+  };
+
+  if (id) {
+    query.where = {
+      phone,
+      id: Not(id),
+    };
+  }
+
+  return await dao.staff.findOneWithCondition(query);
+};
+
+const findOneFullInfoWithPhone = async (
+  phone: string,
+  id?: string
+): Promise<[Staff | null, string | null]> => {
+  const query: FindOneOptions<Staff> = {
+    where: {
+      phone,
+    },
+    relations: ["department", "department.company"],
+  };
+
+  if (id) {
+    query.where = {
+      phone,
+      id: Not(id),
+    };
+  }
+  return await dao.staff.findOneWithCondition(query);
+};
+
+const editStaff = (
+  staff: Staff,
+  requestStaff: Staff = new Staff()
+): string | null => {
+  const editStaff = { ...staff, ...requestStaff };
+  editStaff.password = helper.hashPassword(editStaff.password);
+  return dao.staff.update(editStaff);
+};
+
+const changStatusStaff = (staff: Staff): string | null => {
+  staff.active = !staff.active;
+  return dao.staff.update(staff);
+};
+
+export default {
+  changStatusStaff,
+  editStaff,
+  findOneFullInfoWithPhone,
+  findOneWithId,
+  findOneWithPhone,
+  listAll,
+  newStaff,
+};

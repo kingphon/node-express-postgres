@@ -17,4 +17,4 @@ const checkIfUnencryptedPasswordIsValid = (password: string, encryptedPassword: 
     return bcrypt.compareSync(password, encryptedPassword);
 }
 
-export { checkActive, hashPassword, checkIfUnencryptedPasswordIsValid }
+export default { checkActive, hashPassword, checkIfUnencryptedPasswordIsValid }
