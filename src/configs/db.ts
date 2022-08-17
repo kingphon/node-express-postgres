@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import {
-  Company, CompanyType, DocumentStatus, Department, Staff
+  Staff
 } from "../entities"
 
 export default class DB {
@@ -18,10 +18,6 @@ export default class DB {
       synchronize: true,
       logging: false,
       entities: [
-        CompanyType,
-        Company,
-        DocumentStatus,
-        Department,
         Staff,
       ]
     })
@@ -29,14 +25,6 @@ export default class DB {
   
   static getAppDataSource = () => {
     return this._appDataSource
-  }
-
-  static getCompanyRepository = () => {
-    return this._appDataSource.getRepository(Company)
-  }
-
-  static getDepartmentRepository = () => {
-    return this._appDataSource.getRepository(Department)
   }
 
   static getStaffRepository = () => {
